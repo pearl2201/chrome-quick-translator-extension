@@ -1,8 +1,6 @@
 import { useCaptureStore } from './store/useCaptureStore';
 
-const openTranslatePage = () => {
-  chrome.tabs.create({ url: 'translate.html' });
-};
+const openPage = (url: string) => () => chrome.tabs.create({ url });
 
 export default function App() {
   const { isCapturing, progress, error, startCapture } = useCaptureStore();
@@ -62,10 +60,16 @@ export default function App() {
           {isCapturing ? 'Processing Layout...' : '📸 Capture Full Page'}
         </button>
         <button
-          onClick={openTranslatePage}
+          onClick={openPage('translate.html')}
           className="w-full py-2.5 px-4 font-semibold text-sm rounded-lg shadow-md transition-all duration-200 text-center block bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
         >
           🌐 Translate Only
+        </button>
+        <button
+          onClick={openPage('dict.html')}
+          className="w-full py-2.5 px-4 font-semibold text-sm rounded-lg shadow-md transition-all duration-200 text-center block bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
+        >
+          📖 Dictionary Manager
         </button>
       </footer>
     </div>

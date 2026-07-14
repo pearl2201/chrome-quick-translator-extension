@@ -172,7 +172,7 @@ export async function initQuickTranslator(): Promise<void> {
  */
 export function translateToVietnamese(
   text: string,
-  wrapType = 1,
+  wrapType = 0,
   algorithm = 0,
   prioritizedName = true,
 ): string {
