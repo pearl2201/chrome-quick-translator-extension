@@ -14,6 +14,7 @@ export default defineConfig({
       input: {
         popup: resolve(__dirname, 'index.html'),
         crop: resolve(__dirname, 'crop.html'),
+        translate: resolve(__dirname, 'translate.html'),
       },
       output: {
         codeSplitting: {

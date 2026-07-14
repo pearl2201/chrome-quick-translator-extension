@@ -1,5 +1,9 @@
 import { useCaptureStore } from './store/useCaptureStore';
 
+const openTranslatePage = () => {
+  chrome.tabs.create({ url: 'translate.html' });
+};
+
 export default function App() {
   const { isCapturing, progress, error, startCapture } = useCaptureStore();
 
@@ -45,7 +49,7 @@ export default function App() {
         )}
       </main>
 
-      <footer>
+      <footer className="flex flex-col gap-2">
         <button
           disabled={isCapturing}
           onClick={handleAction}
@@ -55,7 +59,13 @@ export default function App() {
               : 'bg-indigo-600 hover:bg-indigo-500 text-white active:scale-[0.98]'
           }`}
         >
-          {isCapturing ? 'Processing Layout...' : 'Capture Full Page'}
+          {isCapturing ? 'Processing Layout...' : '📸 Capture Full Page'}
+        </button>
+        <button
+          onClick={openTranslatePage}
+          className="w-full py-2.5 px-4 font-semibold text-sm rounded-lg shadow-md transition-all duration-200 text-center block bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
+        >
+          🌐 Translate Only
         </button>
       </footer>
     </div>

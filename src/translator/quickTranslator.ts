@@ -90,14 +90,27 @@ class ExtensionFileSystem {
 
   // ── Sync I/O (reads from preloaded cache) ──
 
+  /** Extract the last path segment (filename) to match against cached keys. */
+  private cacheKey(path: string): string {
+    const normalized = path.replace(/\\/g, '/');
+    const basename = normalized.split('/').pop() || normalized;
+    // Also try stripping baseUrl prefix
+    const withoutBase = normalized.replace(this.baseUrl.replace(/\\/g, '/') + '/', '');
+    const key = this.cache.has(basename) ? basename
+             : this.cache.has(withoutBase) ? withoutBase
+             : path;
+    return key;
+  }
+
   readFileSync(path: string, _encoding?: string): string {
-    const cached = this.cache.get(path);
+    const key = this.cacheKey(path);
+    const cached = this.cache.get(key);
     if (cached !== undefined) return cached;
-    throw new Error(`File not preloaded: ${path}`);
+    throw new Error(`File not preloaded: ${path} (tried key: ${key})`);
   }
 
   existsSync(path: string): boolean {
-    return this.cache.has(path);
+    return this.cache.has(this.cacheKey(path));
   }
 
   statSync(_path: string): { size: number } {
@@ -135,6 +148,21 @@ export async function initQuickTranslator(): Promise<void> {
   DictionaryConfigurationHelper.setDirectoryPath(dictBaseUrl);
 
   await TranslatorEngine.LoadDictionaries();
+
+  // Merge user-saved entries from chrome.storage.local into the NamePhu dictionary
+  chrome.storage.local.get('userDictionaryEntries', (res: { userDictionaryEntries?: Record<string, string> }) => {
+    const entries = res.userDictionaryEntries;
+    if (entries) {
+      for (const [key, value] of Object.entries(entries)) {
+        try {
+          TranslatorEngine.UpdateNameDictionary(key, value, false, false);
+        } catch {
+          // skip entries that fail to insert
+        }
+      }
+    }
+  });
+
   engineInitialized = true;
 }
 
@@ -149,16 +177,11 @@ export function translateToVietnamese(
   prioritizedName = true,
 ): string {
   const standardized = TranslatorEngine.StandardizeInput(text);
-  const hv = TranslatorEngine.ChineseToHanViet(standardized);
-  const vp = TranslatorEngine.ChineseToVietPhrase(
+  const vp = TranslatorEngine.ChineseToVietPhraseOneMeaning(
     standardized,
     wrapType,
     algorithm,
     prioritizedName,
   );
-  return [
-    `=== Hán-Việt ===\n${hv.result}`,
-    ``,
-    `=== Việt Phrase ===\n${vp.result}`,
-  ].join('\n');
+  return vp.result;
 }

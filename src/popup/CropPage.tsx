@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Group, Image as KonvaImage, Rect, Transformer } from 'react-konva';
 import { createWorker } from 'tesseract.js';
 import { initQuickTranslator, translateToVietnamese } from '../translator/quickTranslator';
+import WordLookup from './WordLookup';
 
 export default function CropPage() {
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -19,6 +20,7 @@ export default function CropPage() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const fullscreenRef = useRef<HTMLDivElement>(null);
+  const ocrTextRef = useRef<HTMLTextAreaElement>(null);
   const shapeRef = useRef<any>(null);
   const trRef = useRef<any>(null);
   const stageRef = useRef<any>(null);
@@ -466,10 +468,12 @@ export default function CropPage() {
                 Extracted Text (OCR)
               </label>
               <textarea
+                ref={ocrTextRef}
                 readOnly
                 className="flex-1 w-full p-3 bg-slate-950 border border-slate-800 rounded-lg text-sm font-mono text-slate-200 resize-none focus:outline-none"
                 value={extractedText}
               />
+              <WordLookup textareaRef={ocrTextRef} />
             </div>
             <div className="flex flex-col gap-2 overflow-hidden">
               <label className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider shrink-0">
