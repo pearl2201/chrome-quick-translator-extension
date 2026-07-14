@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "postinstall": "cd node_modules/quick-translator-engine && npx --yes tsc",
     "lint": "oxlint",
     "preview": "vite preview"
   },
@@ -16,7 +17,8 @@
     "react-dom": "^19.2.7",
     "react-konva": "^19.2.5",
     "tesseract.js": "^7.0.0",
-    "zustand": "^5.0.14"
+    "zustand": "^5.0.14",
+    "quick-translator-engine": "github:pearl2201/quick-translator-ts"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.33",
