@@ -170,7 +170,9 @@ export default function CropPage() {
       await worker.reinitialize('chi_sim+chi_tra+eng');
       const { data: { text } } = await worker.recognize(dataUrl);
       await worker.terminate();
-      setExtractedText(text || '(No text detected)');
+      // Strip spaces between CJK characters (Tesseract often inserts them incorrectly)
+      const cleaned = text ? text.replace(/([\u3400-\u9fff\uf900-\ufaff])\s+(?=[\u3400-\u9fff\uf900-\ufaff])/g, '$1') : '';
+      setExtractedText(cleaned || '(No text detected)');
       setTranslatedText('');
       setPage('TRANSLATE');
     } catch (err) {
