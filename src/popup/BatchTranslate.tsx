@@ -114,15 +114,13 @@ export default function BatchTranslate() {
     }
   };
 
-  const handleOpenFolder = async () => {
+  const handleCopyOutputPath = async () => {
     if (!folderHandle) return;
+    const msg = `Output files are in the "output/" subdirectory of the folder you selected.\nFolder: ${folderHandle.name}\n\nUse the 📥 Download button in the table to save each file.`;
     try {
-      // Try to open the folder via chrome.tabs — works on some Chrome versions
-      chrome.tabs.create({ url: `file:///${folderHandle.name.replace(/\\/g, '/')}/output/` });
-    } catch {
-      // Fallback: copy folder name to clipboard
-      navigator.clipboard.writeText(`output/ subdirectory inside "${folderHandle.name}"`);
-    }
+      await navigator.clipboard.writeText(msg);
+    } catch {}
+    alert(msg);
   };
 
   const doneCount = files.filter((f) => f.status === 'done').length;
@@ -157,11 +155,11 @@ export default function BatchTranslate() {
           </button>
           {doneCount > 0 && (
             <button
-              onClick={handleOpenFolder}
+              onClick={handleCopyOutputPath}
               className="px-3 py-1.5 bg-indigo-700 hover:bg-indigo-600 text-white text-xs rounded-lg transition"
-              title="Open output folder"
+              title="Shows output location info"
             >
-              📂 Open Output
+              📋 Output Info
             </button>
           )}
         </div>
