@@ -142,7 +142,7 @@ export default function DictionaryManager() {
       {/* Navbar */}
       <nav className="flex items-center justify-between px-4 py-2 border-b border-slate-800 shrink-0 bg-slate-950">
         <h1 className="text-lg font-bold tracking-tight text-indigo-400">
-          Dictionary Manager
+          Dictionary Manager — Quick Translator JS
         </h1>
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-500">{entries.length} entries</span>

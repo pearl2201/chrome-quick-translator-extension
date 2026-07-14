@@ -62,7 +62,7 @@ export default function TranslatePage() {
       {/* Navbar */}
       <nav className="flex items-center justify-between px-4 py-2 border-b border-slate-800 shrink-0 bg-slate-950">
         <h1 className="text-lg font-bold tracking-tight text-indigo-400">
-          SnapFull Suite — Translate
+          Quick Translator JS — Translate
         </h1>
         <div className="flex items-center gap-2">
           {/* Engine selector */}

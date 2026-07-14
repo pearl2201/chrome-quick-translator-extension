@@ -40,13 +40,15 @@ export default function WordLookup({ textareaRef }: Props) {
     setPosition({ top, left });
     setSelectedText(text);
 
-    // Look up in dictionaries
+    // Look up in dictionaries; if not found, try translating
     try {
-      const value = TranslatorEngine.GetVietPhraseOrNameValueFromKey(text);
-      if (value) {
-        setLookupResult(value);
+      const dictValue = TranslatorEngine.GetVietPhraseOrNameValueFromKey(text);
+      if (dictValue) {
+        setLookupResult(dictValue);
       } else {
-        setLookupResult('(not found in dictionaries)');
+        // Translate the selected text on the fly
+        const translated = TranslatorEngine.ChineseToVietPhraseOneMeaning(text, 0, 0, true);
+        setLookupResult(translated.result || '(no translation)');
       }
     } catch {
       setLookupResult('(lookup failed)');
@@ -84,6 +86,32 @@ export default function WordLookup({ textareaRef }: Props) {
     document.addEventListener('mousedown', onClick);
     return () => document.removeEventListener('mousedown', onClick);
   }, [textareaRef]);
+
+  /** Capitalize the first letter of each word (supports Vietnamese Unicode). */
+  const toTitleCase = (s: string): string =>
+    s.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+  const handleAddName = () => {
+    const raw = lookupResult && !lookupResult.startsWith('(') && !lookupResult.startsWith('(no')
+      ? lookupResult
+      : '';
+    if (!raw || !selectedText) return;
+    // Only the last line (after ===) — take the Việt phrase portion
+    const viet = raw.includes('\n')
+      ? raw.split('\n').filter(l => l && !l.startsWith('===')).pop()?.trim() || raw
+      : raw;
+    const titled = toTitleCase(viet);
+    try {
+      TranslatorEngine.UpdateNameDictionary(selectedText, titled, false, false);
+    } catch {}
+    chrome.storage.local.get('userDictionaryEntries', (res: { userDictionaryEntries?: Record<string, string> }) => {
+      const entries: Record<string, string> = res.userDictionaryEntries || {};
+      entries[selectedText] = titled;
+      chrome.storage.local.set({ userDictionaryEntries: entries }, () => {
+        setLookupResult(titled + ' ✅');
+      });
+    });
+  };
 
   const handleEdit = () => {
     setEditValue(lookupResult && !lookupResult.startsWith('(') ? lookupResult : '');
@@ -167,19 +195,19 @@ export default function WordLookup({ textareaRef }: Props) {
             <div className="font-mono text-slate-200 break-words min-h-[20px]">
               {lookupResult}
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={handleAddName}
+                className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[11px] font-semibold"
+                title="Save with Title Case to Names2"
+              >
+                ➕ Add Name
+              </button>
               <button
                 onClick={handleEdit}
                 className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[11px] font-semibold"
               >
                 ✏️ Edit
-              </button>
-              <button
-                onClick={() => setEditValue(lookupResult && !lookupResult.startsWith('(') ? lookupResult : '')}
-                className="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-[11px]"
-                title="Copy current value to editor"
-              >
-                📋 Copy
               </button>
             </div>
           </div>

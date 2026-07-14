@@ -2,9 +2,9 @@ import { defineManifest } from '@crxjs/vite-plugin'
 
 export default defineManifest({
   manifest_version: 3,
-  name: "Chrome-quick-translator-extension",
+  name: "Quick Translator JS",
   version: "1.0.0",
-  description: "Chrome quick translator extension built with React, Konva, tesseract.",
+  description: "Full-page capture, OCR, and Chinese-to-Vietnamese translation engine.",
   permissions: [
     "activeTab",
     "scripting",
