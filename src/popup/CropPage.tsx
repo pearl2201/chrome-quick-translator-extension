@@ -377,9 +377,9 @@ export default function CropPage() {
                 </Layer>
               </Stage>
             )}
-            {/* OCR loading overlay */}
+            {/* OCR loading overlay — fixed to cover viewport regardless of scroll */}
             {isProcessingOcr && (
-              <div className="absolute inset-0 bg-slate-950/80 flex flex-col items-center justify-center z-20">
+              <div className="fixed inset-0 bg-slate-950/80 flex flex-col items-center justify-center z-20">
                 <div className="text-5xl animate-spin mb-4">⏳</div>
                 <p className="text-lg font-semibold text-slate-300">
                   Recognizing text... {ocrProgress}%
