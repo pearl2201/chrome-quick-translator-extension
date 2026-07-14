@@ -31,7 +31,8 @@ export const useCaptureStore = create<CaptureState>((set) => ({
     set({ isCapturing: true, progress: 0, error: null, stitchedImageUri: null, activeStep: 'CAPTURE' });
     
     try {
-      chrome.runtime.sendMessage({ action: "START_CAPTURE", tabId }, (response) => {
+      // Send capture request to content script in the target tab
+      chrome.tabs.sendMessage(tabId, { action: "START_CAPTURE" }, (response) => {
         if (chrome.runtime.lastError) {
           set({ isCapturing: false, error: chrome.runtime.lastError.message });
           return;
@@ -44,6 +45,10 @@ export const useCaptureStore = create<CaptureState>((set) => ({
       const progressListener = (message: any) => {
         if (message.action === "CAPTURE_PROGRESS") {
           set({ progress: message.percent });
+        }
+        if (message.action === "CAPTURE_ERROR") {
+          set({ isCapturing: false, error: message.message });
+          chrome.runtime.onMessage.removeListener(progressListener);
         }
         if (message.action === "CAPTURE_COMPLETE") {
           set({ isCapturing: false, progress: 100, stitchedImageUri: message.dataUrl });

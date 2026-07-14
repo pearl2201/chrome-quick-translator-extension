@@ -8,7 +8,6 @@ export default defineManifest({
   permissions: [
     "activeTab",
     "scripting",
-    "debugger",
     "storage"
   ],
   background: {

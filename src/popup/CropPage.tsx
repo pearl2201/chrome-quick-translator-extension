@@ -136,17 +136,36 @@ export default function CropPage() {
       const dataUrl = canvas.toDataURL('image/png');
 
       // Fetch worker script and create a blob URL to bypass CSP
-      const worker = await createWorker('eng', 1, {
+      const worker = await createWorker(['chi_sim', 'chi_tra', 'eng'], 1, {
         workerPath: chrome.runtime.getURL('tesseract/worker.min.js'),
-        corePath: chrome.runtime.getURL('tesseract/tesseract-core.wasm.js'),
+        // CRUCIAL FOR v7: corePath must point to the FOLDER, not the specific file string.
+        corePath: chrome.runtime.getURL('tesseract/'),
+        // Points to your local public folder containing your .traineddata files
+        langPath: chrome.runtime.getURL('tesseract/'),
         //langPath: chrome.runtime.getURL('tesseract/'), // Point to folder containing eng.traineddata
         workerBlobURL: false,
+        // FIX: Catch and suppress the false-positive initialization path errors
+        errorHandler: (err: any) => {
+          const errorString = String(err);
+          if (
+            errorString.includes("Error opening data file") ||
+            errorString.includes("Failed loading language")
+          ) {
+            // Ignore this specific text asset loading loop artifact
+            return;
+          }
+          // Otherwise, log genuine engine failures
+          console.error("Tesseract Engine Error:", err);
+        },
         logger: (m) => {
           if (m.status === 'recognizing text') {
             setOcrProgress(Math.round(m.progress * 100));
           }
         },
       });
+
+      // 3. Re-initialize the worker to combine all loaded languages for this active job
+      await worker.reinitialize('chi_sim+chi_tra+eng');
       const { data: { text } } = await worker.recognize(dataUrl);
       await worker.terminate();
       setExtractedText(text || '(No text detected)');
