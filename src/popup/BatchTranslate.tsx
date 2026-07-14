@@ -7,6 +7,8 @@ interface FileEntry {
   status: 'pending' | 'processing' | 'done' | 'error';
   result?: string;
   error?: string;
+  /** Handle to the written output file, so we can offer it for download. */
+  outFileHandle?: FileSystemFileHandle;
 }
 
 export default function BatchTranslate() {
@@ -72,7 +74,7 @@ export default function BatchTranslate() {
 
           setFiles((prev) => {
             const next = [...prev];
-            next[i] = { ...next[i], status: 'done', result };
+            next[i] = { ...next[i], status: 'done', result, outFileHandle: outFile };
             return next;
           });
         } catch (err) {
@@ -89,6 +91,37 @@ export default function BatchTranslate() {
       console.error('Batch failed:', err);
     } finally {
       setIsRunning(false);
+    }
+  };
+
+  const handleDownload = async (entry: FileEntry) => {
+    if (entry.outFileHandle) {
+      const file = await entry.outFileHandle.getFile();
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = entry.name.replace(/\.txt$/i, '_translated.txt');
+      a.click();
+      URL.revokeObjectURL(url);
+    } else if (entry.result) {
+      const blob = new Blob([entry.result], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = entry.name.replace(/\.txt$/i, '_translated.txt');
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const handleOpenFolder = async () => {
+    if (!folderHandle) return;
+    try {
+      // Try to open the folder via chrome.tabs — works on some Chrome versions
+      chrome.tabs.create({ url: `file:///${folderHandle.name.replace(/\\/g, '/')}/output/` });
+    } catch {
+      // Fallback: copy folder name to clipboard
+      navigator.clipboard.writeText(`output/ subdirectory inside "${folderHandle.name}"`);
     }
   };
 
@@ -122,6 +155,15 @@ export default function BatchTranslate() {
           >
             {isRunning ? `⏳ ${progress}/${files.length}` : '▶ Run Batch'}
           </button>
+          {doneCount > 0 && (
+            <button
+              onClick={handleOpenFolder}
+              className="px-3 py-1.5 bg-indigo-700 hover:bg-indigo-600 text-white text-xs rounded-lg transition"
+              title="Open output folder"
+            >
+              📂 Open Output
+            </button>
+          )}
         </div>
       </nav>
 
@@ -147,22 +189,23 @@ export default function BatchTranslate() {
           <div className="flex flex-col items-center justify-center h-full text-slate-600 space-y-3">
             <div className="text-5xl">📂</div>
             <p className="text-sm">Click <strong>Select Folder</strong> to pick a folder with .txt files</p>
-            <p className="text-xs text-slate-700">Output will be written to an <code>output/</code> subdirectory</p>
+            <p className="text-xs text-slate-700">Output written to <code>output/</code> subdirectory — use 📥 to download each file</p>
           </div>
         ) : (
           <table className="w-full text-xs">
             <thead className="sticky top-0 bg-slate-800 text-slate-400 uppercase tracking-wider">
               <tr>
                 <th className="text-left px-4 py-2">File</th>
-                <th className="text-center px-4 py-2 w-[80px]">Size</th>
-                <th className="text-center px-4 py-2 w-[90px]">Status</th>
+                <th className="text-center px-4 py-2 w-[60px]">Size</th>
+                <th className="text-center px-4 py-2 w-[80px]">Status</th>
+                <th className="text-center px-4 py-2 w-[90px]">Actions</th>
               </tr>
             </thead>
             <tbody>
               {files.map((f, i) => (
                 <tr key={i} className="border-t border-slate-800 hover:bg-slate-800/50">
-                  <td className="px-4 py-2 font-mono text-slate-200 truncate max-w-[400px]">
-                    {f.name}
+                  <td className="px-4 py-2 font-mono text-slate-200 truncate max-w-[300px]">
+                    {f.status === 'done' ? f.name.replace(/\.txt$/i, '_translated.txt') : f.name}
                   </td>
                   <td className="px-4 py-2 text-center text-slate-500">
                     {f.content.length}
@@ -173,6 +216,17 @@ export default function BatchTranslate() {
                     {f.status === 'done' && <span className="text-emerald-400">✅ Done</span>}
                     {f.status === 'error' && (
                       <span className="text-red-400" title={f.error}>❌ Error</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    {f.status === 'done' && (
+                      <button
+                        onClick={() => handleDownload(f)}
+                        className="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-[10px]"
+                        title="Download file"
+                      >
+                        📥
+                      </button>
                     )}
                   </td>
                 </tr>
