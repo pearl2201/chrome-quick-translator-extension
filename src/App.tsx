@@ -71,6 +71,12 @@ export default function App() {
         >
           📖 Dictionary Manager
         </button>
+        <button
+          onClick={openPage('batch.html')}
+          className="w-full py-2.5 px-4 font-semibold text-sm rounded-lg shadow-md transition-all duration-200 text-center block bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
+        >
+          📂 Batch Translate
+        </button>
       </footer>
     </div>
   );

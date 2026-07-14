@@ -16,6 +16,7 @@ export default defineConfig({
         crop: resolve(__dirname, 'crop.html'),
         translate: resolve(__dirname, 'translate.html'),
         dict: resolve(__dirname, 'dict.html'),
+        batch: resolve(__dirname, 'batch.html'),
       },
       output: {
         codeSplitting: {
