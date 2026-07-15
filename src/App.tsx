@@ -1,9 +1,23 @@
+import { useEffect, useRef } from 'react';
 import { useCaptureStore } from './store/useCaptureStore';
 
 const openPage = (url: string) => () => chrome.tabs.create({ url });
 
 export default function App() {
   const { isCapturing, progress, error, startCapture } = useCaptureStore();
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Force Chrome popup to recalculate height when content changes
+  useEffect(() => {
+    if (rootRef.current) {
+      rootRef.current.style.minHeight = '0px';
+      requestAnimationFrame(() => {
+        if (rootRef.current) {
+          rootRef.current.style.minHeight = '';
+        }
+      });
+    }
+  }, [isCapturing, error]);
 
   const handleAction = async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -13,7 +27,7 @@ export default function App() {
   };
 
   return (
-    <div className="p-5 flex flex-col justify-between h-full bg-slate-900 text-white selection:bg-indigo-500 w-[350px]">
+    <div ref={rootRef} className="p-5 flex flex-col justify-between bg-slate-900 text-white selection:bg-indigo-500 w-[350px] min-h-[500px]">
       <header className="border-b border-slate-800 pb-3 flex items-start justify-between">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-indigo-400">Quick Translator JS</h1>

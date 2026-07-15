@@ -42,7 +42,8 @@ export default defineManifest({
         "**/*",
         "*",
         "tesseract/*",
-        "models/*"
+        "models/*",
+        "wasm/*"
       ],
       "use_dynamic_url": false
     }

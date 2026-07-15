@@ -6,6 +6,7 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<EngineSettings>({
     defaultEngine: 'quick-translator-ts',
     geminiApiKey: '',
+    thinkingLevel: 'MEDIUM',
   });
   const [saved, setSaved] = useState(false);
 
@@ -71,6 +72,26 @@ export default function SettingsPage() {
           />
           <p className="text-xs text-slate-600 mt-1">
             Required when using the Gemini engine. Stored locally in your browser.
+          </p>
+        </section>
+
+        {/* Gemini Thinking Level */}
+        <section>
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">
+            Gemini Thinking Level
+          </label>
+          <select
+            value={settings.thinkingLevel}
+            onChange={(e) => setSettings((s) => ({ ...s, thinkingLevel: e.target.value }))}
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg focus:outline-none focus:border-indigo-500 cursor-pointer"
+          >
+            <option value="MINIMAL">MINIMAL</option>
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+          </select>
+          <p className="text-xs text-slate-600 mt-1">
+            Controls how much the Gemini model thinks before responding. Higher levels produce more thorough translations.
           </p>
         </section>
       </main>
