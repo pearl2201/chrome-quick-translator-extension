@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Chrome extension build artifacts
+*.crx
+*.pem
+dist.zip

@@ -27,8 +27,20 @@ export default defineManifest({
       ]
     }
   ],
+  // Top-level icons for Chrome management/Web Store
+  icons: {
+    '16': 'icons/icon.png',
+    '48': 'icons/icon.png',
+    '128': 'icons/icon.png',
+  },
   action: {
-    default_popup: "index.html"
+    default_popup: "index.html",
+    // Icons for the browser toolbar button
+    default_icon: {
+      '16': 'icons/icon.png',
+      '32': 'icons/icon.png',
+      '48': 'icons/icon.png',
+    },
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
