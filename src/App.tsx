@@ -61,8 +61,8 @@ export default function App() {
               <span className="text-indigo-400 font-mono font-bold">{progress}%</span>
             </div>
             <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-              <div 
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2.5 rounded-full transition-all duration-300 ease-out" 
+              <div
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2.5 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
@@ -85,11 +85,10 @@ export default function App() {
         <button
           disabled={isCapturing}
           onClick={handleAction}
-          className={`w-full py-2.5 px-4 font-semibold text-sm rounded-lg shadow-md transition-all duration-200 text-center block ${
-            isCapturing 
-              ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700' 
+          className={`w-full py-2.5 px-4 font-semibold text-sm rounded-lg shadow-md transition-all duration-200 text-center block ${isCapturing
+              ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
               : 'bg-indigo-600 hover:bg-indigo-500 text-white active:scale-[0.98]'
-          }`}
+            }`}
         >
           {isCapturing ? 'Processing Layout...' : '📸 Capture Full Page'}
         </button>
@@ -97,13 +96,7 @@ export default function App() {
           onClick={openPage('translate.html')}
           className="w-full py-2.5 px-4 font-semibold text-sm rounded-lg shadow-md transition-all duration-200 text-center block bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
         >
-          🌐 Translate Only
-        </button>
-        <button
-          onClick={openPage('dict.html')}
-          className="w-full py-2.5 px-4 font-semibold text-sm rounded-lg shadow-md transition-all duration-200 text-center block bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
-        >
-          📖 Dictionary Manager
+          🌐 Translate
         </button>
         <button
           onClick={openPage('batch.html')}
@@ -111,6 +104,13 @@ export default function App() {
         >
           📂 Batch Translate
         </button>
+        <button
+          onClick={openPage('dict.html')}
+          className="w-full py-2.5 px-4 font-semibold text-sm rounded-lg shadow-md transition-all duration-200 text-center block bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
+        >
+          📖 Dictionary Manager
+        </button>
+
       </footer>
     </div>
   );

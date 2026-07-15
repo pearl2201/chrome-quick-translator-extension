@@ -29,17 +29,17 @@ export default defineManifest({
   ],
   // Top-level icons for Chrome management/Web Store
   icons: {
-    '16': 'icons/icon.png',
-    '48': 'icons/icon.png',
-    '128': 'icons/icon.png',
+    '16': 'icons/extension-icon.png',
+    '48': 'icons/extension-icon.png',
+    '128': 'icons/extension-icon.png',
   },
   action: {
     default_popup: "index.html",
     // Icons for the browser toolbar button
     default_icon: {
-      '16': 'icons/icon.png',
-      '32': 'icons/icon.png',
-      '48': 'icons/icon.png',
+      '16': 'icons/extension-icon.png',
+      '32': 'icons/extension-icon.png',
+      '48': 'icons/extension-icon.png',
     },
   },
   "content_security_policy": {
