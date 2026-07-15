@@ -6,10 +6,10 @@ export default defineManifest({
   version: "1.0.0",
   description: "Full-page capture, OCR, and Chinese-to-Vietnamese translation engine.",
   permissions: [
-    "activeTab",
-    "scripting",
-    "debugger",
-    "storage"
+    "activeTab",     // Access the current tab for screenshot capture via chrome.tabs
+    "scripting",     // Inject content scripts and execute scripts for OCR/translation
+    "debugger",      // Chrome DevTools Protocol — full-page screenshot via Page.captureScreenshot
+    "storage"        // Persist user settings (default engine, Gemini API key, thinking level)
   ],
   background: {
     // FIX: Targets raw source file directly with relative tracking
@@ -19,11 +19,11 @@ export default defineManifest({
   content_scripts: [
     {
       "matches": [
-        "<all_urls>"
+        "<all_urls>"  // Run on every page to enable translation features
       ],
       "js": [
         // FIX: Replaced compiled string wrapper back to clean source path
-        "src/content/content.ts"
+        "src/content/content.ts"  // Injected content script for DOM interaction
       ]
     }
   ],
