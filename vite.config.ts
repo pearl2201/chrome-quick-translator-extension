@@ -17,6 +17,7 @@ export default defineConfig({
         translate: resolve(__dirname, 'translate.html'),
         dict: resolve(__dirname, 'dict.html'),
         batch: resolve(__dirname, 'batch.html'),
+        settings: resolve(__dirname, 'settings.html'),
       },
       output: {
         codeSplitting: {

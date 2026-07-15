@@ -1,11 +1,18 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { initQuickTranslator, translateToVietnamese } from '../translator/quickTranslator';
+import { getEngineSettings } from '../translator/engineSettings';
 import WordLookup from './WordLookup';
+import { translateToVietnamese as hachimiTranslator } from '../translator/hachimiTranslator';
+import { translateToVietnamese as geminiTranslator } from '../translator/geminiTranslator';
 
 export default function TranslatePage() {
   const [inputText, setInputText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
   const [translateEngine, setTranslateEngine] = useState('quick-translator-ts');
+
+  useEffect(() => {
+    getEngineSettings().then((s) => setTranslateEngine(s.defaultEngine));
+  }, []);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const fullscreenRef = useRef<HTMLDivElement>(null);
@@ -18,6 +25,12 @@ export default function TranslatePage() {
       if (translateEngine === 'quick-translator-ts') {
         await initQuickTranslator();
         const result = translateToVietnamese(inputText);
+        setTranslatedText(result);
+      } else if (translateEngine === 'hachimitu-60-qt') {
+        const result = await hachimiTranslator(inputText);
+        setTranslatedText(result);
+      } else if (translateEngine === 'gemini') {
+        const result = await geminiTranslator(inputText);
         setTranslatedText(result);
       } else {
         setTranslatedText(`[${translateEngine}] Engine not yet integrated.\nInput:\n${inputText}`);

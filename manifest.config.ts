@@ -41,7 +41,8 @@ export default defineManifest({
       "resources": [
         "**/*",
         "*",
-        "tesseract/*"
+        "tesseract/*",
+        "models/*"
       ],
       "use_dynamic_url": false
     }

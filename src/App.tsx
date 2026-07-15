@@ -14,9 +14,18 @@ export default function App() {
 
   return (
     <div className="p-5 flex flex-col justify-between h-full bg-slate-900 text-white selection:bg-indigo-500 w-[350px]">
-      <header className="border-b border-slate-800 pb-3">
-        <h1 className="text-xl font-bold tracking-tight text-indigo-400">Quick Translator JS</h1>
-        <p className="text-xs text-slate-400 mt-1">Capture, OCR, and Chinese → Vietnamese translation.</p>
+      <header className="border-b border-slate-800 pb-3 flex items-start justify-between">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-indigo-400">Quick Translator JS</h1>
+          <p className="text-xs text-slate-400 mt-1">Capture, OCR, and Chinese → Vietnamese translation.</p>
+        </div>
+        <button
+          onClick={openPage('settings.html')}
+          className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs rounded-lg transition shrink-0 mt-1"
+          title="Settings"
+        >
+          ⚙️
+        </button>
       </header>
 
       <main className="my-4 flex flex-col justify-center flex-1">

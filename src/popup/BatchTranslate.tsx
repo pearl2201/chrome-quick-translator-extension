@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { initQuickTranslator, translateToVietnamese } from '../translator/quickTranslator';
+import { getEngineSettings } from '../translator/engineSettings';
+import { translateToVietnamese as hachimiTranslator } from '../translator/hachimiTranslator';
+import { translateToVietnamese as geminiTranslator } from '../translator/geminiTranslator';
 
 interface FileEntry {
   name: string;
@@ -13,6 +16,12 @@ interface FileEntry {
 
 export default function BatchTranslate() {
   const [files, setFiles] = useState<FileEntry[]>([]);
+
+  const [translateEngine, setTranslateEngine] = useState('quick-translator-ts');
+
+  useEffect(() => {
+    getEngineSettings().then((s) => setTranslateEngine(s.defaultEngine));
+  }, []);
   const [folderHandle, setFolderHandle] = useState<FileSystemDirectoryHandle | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -63,7 +72,16 @@ export default function BatchTranslate() {
         });
 
         try {
-          const result = translateToVietnamese(f.content);
+          let result: string;
+          if (translateEngine === 'quick-translator-ts') {
+            result = translateToVietnamese(f.content);
+          } else if (translateEngine === 'hachimitu-60-qt') {
+            result = await hachimiTranslator(f.content);
+          } else if (translateEngine === 'gemini') {
+            result = await geminiTranslator(f.content);
+          } else {
+            result = `[${translateEngine}] Engine not supported in batch.`;
+          }
           const outName = f.name.replace(/\.txt$/i, '_translated.txt');
 
           // Write output file

@@ -2,6 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Group, Image as KonvaImage, Rect, Transformer } from 'react-konva';
 import { createWorker } from 'tesseract.js';
 import { initQuickTranslator, translateToVietnamese } from '../translator/quickTranslator';
+import { getEngineSettings } from '../translator/engineSettings';
+import { translateToVietnamese as hachimiTranslator } from '../translator/hachimiTranslator';
+import { translateToVietnamese as geminiTranslator } from '../translator/geminiTranslator';
 import WordLookup from './WordLookup';
 
 export default function CropPage() {
@@ -17,6 +20,10 @@ export default function CropPage() {
   const [page, setPage] = useState<'CROP' | 'TRANSLATE'>('CROP');
   const [translatedText, setTranslatedText] = useState('');
   const [translateEngine, setTranslateEngine] = useState('quick-translator-ts');
+
+  useEffect(() => {
+    getEngineSettings().then((s) => setTranslateEngine(s.defaultEngine));
+  }, []);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const fullscreenRef = useRef<HTMLDivElement>(null);
@@ -424,28 +431,35 @@ export default function CropPage() {
             </select>
 
             <div className="flex items-center gap-2">
-              {translateEngine === 'quick-translator-ts' && (
-                <button
-                  onClick={async () => {
-                    if (!extractedText) return;
-                    setIsTranslating(true);
-                    try {
+              <button
+                onClick={async () => {
+                  if (!extractedText) return;
+                  setIsTranslating(true);
+                  try {
+                    let result: string;
+                    if (translateEngine === 'quick-translator-ts') {
                       await initQuickTranslator();
-                      const result = translateToVietnamese(extractedText);
-                      setTranslatedText(result);
-                    } catch (err) {
-                      console.error('Translation failed:', err);
-                      setTranslatedText('Translation engine error: ' + (err as Error).message);
-                    } finally {
-                      setIsTranslating(false);
+                      result = translateToVietnamese(extractedText);
+                    } else if (translateEngine === 'hachimitu-60-qt') {
+                      result = await hachimiTranslator(extractedText);
+                    } else if (translateEngine === 'gemini') {
+                      result = await geminiTranslator(extractedText);
+                    } else {
+                      result = `[${translateEngine}] Engine not yet integrated.`;
                     }
-                  }}
-                  disabled={isTranslating}
-                  className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 disabled:bg-emerald-900 disabled:text-slate-500 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1"
-                >
-                  {isTranslating ? '⏳ Translating…' : '🌐 Translate'}
-                </button>
-              )}
+                    setTranslatedText(result);
+                  } catch (err) {
+                    console.error('Translation failed:', err);
+                    setTranslatedText('Translation engine error: ' + (err as Error).message);
+                  } finally {
+                    setIsTranslating(false);
+                  }
+                }}
+                disabled={isTranslating}
+                className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 disabled:bg-emerald-900 disabled:text-slate-500 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1"
+              >
+                {isTranslating ? '⏳ Translating…' : '🌐 Translate'}
+              </button>
               <button
                 onClick={toggleFullscreen}
                 className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1"
