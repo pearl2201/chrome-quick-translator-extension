@@ -19,13 +19,24 @@ export default function App() {
           <h1 className="text-xl font-bold tracking-tight text-indigo-400">Quick Translator JS</h1>
           <p className="text-xs text-slate-400 mt-1">Capture, OCR, and Chinese → Vietnamese translation.</p>
         </div>
-        <button
-          onClick={openPage('settings.html')}
-          className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs rounded-lg transition shrink-0 mt-1"
-          title="Settings"
-        >
-          ⚙️
-        </button>
+        <div className="flex gap-1 shrink-0 mt-1">
+          <a
+            href="https://github.com/pearl2201/chrome-quick-translator-extension"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs rounded-lg transition block"
+            title="GitHub repository"
+          >
+            🐙
+          </a>
+          <button
+            onClick={openPage('settings.html')}
+            className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs rounded-lg transition"
+            title="Settings"
+          >
+            ⚙️
+          </button>
+        </div>
       </header>
 
       <main className="my-4 flex flex-col justify-center flex-1">
